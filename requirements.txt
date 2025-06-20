@@ -3,5 +3,5 @@ pandas
 numpy
 plotly
 scipy
-statsmodel
+statsmodels
 scikit-learn
