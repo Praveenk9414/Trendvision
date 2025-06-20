@@ -940,6 +940,7 @@ elif page == "Trending Now":
         mime='text/csv'
     )
 
+# --- Predictions ---
 elif page == "Predictions":
     st.title("🔮 Trend Predictor")
     st.markdown("Predict future popularity of trends and discover similar trends")
