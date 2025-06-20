@@ -940,110 +940,125 @@ elif page == "Trending Now":
         mime='text/csv'
     )
 
-# --- Predictions ---
-elif page == "Predictions":
-    st.title("🔮 Trend Predictor")
-    st.markdown("Predict future popularity of trends and discover similar trends")
-
-    # Feature Engineering
-    df['duration_hrs'] = df['duration'].dt.total_seconds() / 3600
-    category_map = {cat: i for i, cat in enumerate(df['categories'].unique())}
-    df['category_seq'] = df['categories'].map(category_map)
-    day_map = {'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3,
-               'Friday': 4, 'Saturday': 5, 'Sunday': 6}
-    df['day_num'] = df['day_name'].map(day_map)
-
-    # Model Training
-    features = ['duration_hrs', 'category_seq', 'day_num']
-    X = df[features]
-    y = df['search_vol']
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    model = LinearRegression()
-    model.fit(X_train, y_train)
-
-    # Prediction Interface
-    with st.form("prediction_form"):
-        col1, col2 = st.columns([2, 3])
-
-        with col1:
-            st.subheader("Input Parameters")
-            duration_hrs = st.slider("Duration (hours)", 1, 168, 24)
-            category = st.selectbox("Category", sorted(df['categories'].unique()))
-            day = st.selectbox("Day of Week", list(day_map.keys()))
-
-            if st.form_submit_button("Predict Popularity"):
-                # Make prediction
-                category_num = category_map[category]
-                day_num = day_map[day]
-                prediction = model.predict([[duration_hrs, category_num, day_num]])[0]
-
-                # Store in session state
-                st.session_state['prediction_result'] = {
-                    'predicted_volume': prediction,
-                    'category': category,
-                    'duration': duration_hrs,
-                    'day': day
-                }
-
-        with col2:
-            st.subheader("Prediction Insights")
-
-            if 'prediction_result' in st.session_state:
-                res = st.session_state['prediction_result']
-
-                # Prediction Card
-                st.metric("Predicted Search Volume", f"{res['predicted_volume']:,.0f}")
-
-                # Find similar trends
-                similar_trends = df[
-                    (df['categories'] == res['category']) &
-                    (df['duration'].dt.total_seconds() / 3600).between(
-                        res['duration'] * 0.8, res['duration'] * 1.2)
-                    ].sort_values('search_vol', ascending=False)
-
-                # Category Analysis
-                st.write(f"**🔍 Trends in {res['category']}**")
-                if not similar_trends.empty:
-                    top_trend = similar_trends.iloc[0]
-                    avg_vol = similar_trends['search_vol'].mean()
-
-                    st.caption(f"""
-                    - Top trend: **{top_trend['Trends']}** ({top_trend['search_vol']:,.0f} searches)
-                    - Average volume: {avg_vol:,.0f}
-                    - Your prediction is **{'above' if res['predicted_volume'] > avg_vol else 'below'}** average
-                    """)
-
-                    # Show sample trends
-                    with st.expander("View Similar Trends"):
-                        st.dataframe(
-                            similar_trends[['Trends', 'search_vol', 'duration']].head(10),
-                            column_config={
-                                "Trends": "Trend Name",
-                                "search_vol": st.column_config.NumberColumn("Searches", format="%,d"),
-                                "duration": "Duration"
-                            }
-                        )
-                else:
-                    st.warning("No similar trends found in this category")
-
-                # Duration Analysis
-                duration_days = res['duration'] / 24
-                st.write(f"**⏳ Duration Analysis**")
-                st.caption(f"""
-                - {duration_days:.1f} days predicted
-                - Most trends in this category last {df[df['categories'] == res['category']]['duration'].mean().total_seconds() / 86400:.1f} days
-                """)
-
-    # Model Performance Section
-    st.subheader("Model Performance")
-    y_pred = model.predict(X_test)
-    rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-    st.metric("RMSE", f"{rmse:.2f}", help="Lower is better")
-
-    # Visualize predictions vs actual
-    fig = px.scatter(
-        x=y_test, y=y_pred,
-        labels={'x': 'Actual', 'y': 'Predicted'},
-        title="Actual vs Predicted Search Volumes"
-    )
-    st.plotly_chart(fig, use_container_width=True)
+# # --- Predictions ---
+# elif page == "Predictions":
+#     st.title("🔮 Trend Predictor")
+#     st.markdown("Predict future popularity based on hour, category, and day")
+#
+#     # Feature Engineering
+#     category_map = {cat: i for i, cat in enumerate(df['categories'].unique())}
+#     df['category_seq'] = df['categories'].map(category_map)
+#     day_map = {'Monday': 0, 'Tuesday': 1, 'Wednesday': 2, 'Thursday': 3,
+#                'Friday': 4, 'Saturday': 5, 'Sunday': 6}
+#     df['day_num'] = df['day_name'].map(day_map)
+#
+#     # Model Training (only hour, category_seq, day_num)
+#     features = ['hrs', 'seq', 'day']
+#     X = df[features]
+#     y = df['popularity']
+#     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+#     model = LinearRegression()
+#     model.fit(X_train, y_train)
+#
+#     # Prediction Interface
+#     with st.form("prediction_form"):
+#         col1, col2 = st.columns([2, 3])
+#
+#         with col1:
+#             st.subheader("Input Parameters")
+#
+#             # Hour input (0-23)
+#             hour = st.slider(
+#                 "Hour of Day",
+#                 min_value=0,
+#                 max_value=23,
+#                 value=9,
+#                 help="Select the hour to launch (0-23)"
+#             )
+#
+#             # Category input (string)
+#             category = st.selectbox(
+#                 "Category",
+#                 sorted(df['categories'].unique()),
+#                 help="Select content category"
+#             )
+#
+#             # Day input (string)
+#             day = st.selectbox(
+#                 "Day of Week",
+#                 list(day_map.keys()),
+#                 index=0
+#             )
+#
+#             if st.form_submit_button("Predict Popularity"):
+#                 # Convert inputs to model format
+#                 category_num = category_map[category]
+#                 day_num = day_map[day]
+#
+#                 # Predict with only hour, category_seq, day_num
+#                 prediction = model.predict([[hour,category_num, day_num]])[0]
+#
+#                 # Store results (keeping original string inputs)
+#                 st.session_state['prediction_result'] = {
+#                     'predicted_volume': prediction,
+#                     'category': category,
+#                     'hour': hour,
+#                     'day': day
+#                 }
+#
+#         with col2:
+#             st.subheader("Prediction Insights")
+#
+#             if 'prediction_result' in st.session_state:
+#                 res = st.session_state['prediction_result']
+#
+#                 # Display prediction
+#                 st.metric("Predicted Popularity", f"{res['predicted_volume']:,.0f}")
+#                 st.caption(f"⏰ {res['day']} at {res['hour']}:00 | 📂 {res['category']}")
+#
+#                 # Similar trends analysis
+#                 similar_trends = df[
+#                     (df['categories'] == res['category']) &
+#                     (df['hour'].between(res['hour'] - 2, res['hour'] + 2)) &
+#                     (df['day_name'] == res['day'])
+#                     ].sort_values('search_vol', ascending=False)
+#
+#                 if not similar_trends.empty:
+#                     with st.expander("📈 Similar Successful Trends"):
+#                         # Show top 3 similar trends
+#                         for idx, row in similar_trends.head(3).iterrows():
+#                             st.write(f"**{row['Trends']}**")
+#                             st.caption(f"Volume: {row['search_vol']:,.0f} | Hour: {row['hrs']}:00")
+#
+#                         # Hourly pattern for this category+day
+#                         st.write("**Hourly Popularity Pattern:**")
+#                         hour_pattern = df[
+#                             (df['categories'] == res['category']) &
+#                             (df['day_name'] == res['day'])
+#                             ].groupby('hour')['search_vol'].mean()
+#                         st.line_chart(hour_pattern)
+#                 else:
+#                     st.warning("No similar trends found with these parameters")
+#
+#     # Model Evaluation
+#     st.subheader("Model Performance")
+#     y_pred = model.predict(X_test)
+#
+#     # Metrics in columns
+#     col1, col2, col3 = st.columns(3)
+#     with col1:
+#         st.metric("R² Score", f"{r2_score(y_test, y_pred):.2f}")
+#     with col2:
+#         st.metric("RMSE", f"{np.sqrt(mean_squared_error(y_test, y_pred)):.2f}")
+#     with col3:
+#         st.metric("MAE", f"{mean_absolute_error(y_test, y_pred):.2f}")
+#
+#     # Actual vs Predicted Plot
+#     fig = px.scatter(
+#         x=y_test,
+#         y=y_pred,
+#         labels={'x': 'Actual Popularity', 'y': 'Predicted Popularity'},
+#         title='Model Prediction Accuracy'
+#     )
+#     fig.add_shape(type="line", x0=0, y0=0, x1=max(y_test), y1=max(y_test))
+#     st.plotly_chart(fig, use_container_width=True)
