@@ -32,8 +32,8 @@ if 'search_query' not in st.session_state:
 # Add "Predictions" to the selectbox
 selected = st.sidebar.selectbox(
     "Select Page",
-    ["Home", "Explore", "Trending Now", "Predictions"],
-    index=["Home", "Explore", "Trending Now", "Predictions"].index(st.session_state.page)
+    ["Home", "Explore", "Trending Now"],
+    index=["Home", "Explore", "Trending Now"].index(st.session_state.page)
 )
 
 if selected != st.session_state.page:
