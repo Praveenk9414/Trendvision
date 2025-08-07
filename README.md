@@ -2,7 +2,7 @@
 
 TrenkdVision is a data-driven web application that analyzes **Google Trends** data to uncover **trending topics**, identify **peak activity periods**, and provide **content posting recommendations** based on category-wise user behavior insights.
 
-🔗 **Live Demo**: [Click here to try TrenkdVision](https://trendvision.streamlit.app)
+🔗 **Live Demo**: [Click here to try TrendVision](https://trendvision.streamlit.app)
 
 🧠 **Built With:** Python, Plotly, Streamlit, Scikit-learn, Pandas
 
