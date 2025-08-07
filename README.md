@@ -1,4 +1,4 @@
-# 📊 TrenkdVision – Google Trends Analysis & Recommendation System
+# TrenkdVision – Google Trends Analysis & Recommendation System
 
 TrenkdVision is a data-driven web application that analyzes **Google Trends** data to uncover **trending topics**, identify **peak activity periods**, and provide **content posting recommendations** based on category-wise user behavior insights.
 
@@ -8,26 +8,26 @@ TrenkdVision is a data-driven web application that analyzes **Google Trends** da
 
 ---
 
-## 🚀 Features
+##  Features
 
-- 📈 **Interactive Trend Visualizations**  
+-  **Interactive Trend Visualizations**  
   Explore keyword popularity over time with dynamic charts powered by Plotly.
 
-- 🧠 **NLP-based Clustering**  
+-  **NLP-based Clustering**  
   Similar trends are grouped using sentence embeddings (MiniLM) + KMeans for deeper insight.
 
-- 🕒 **Best Time to Post Recommendations**  
+-  **Best Time to Post Recommendations**  
   Rule-based logic suggests optimal posting days & hours per trend category.
 
-- 🔍 **Category-wise Trend Exploration**  
+-  **Category-wise Trend Exploration**  
   Filter and analyze top-performing trends by category, cluster, day, and hour.
 
-- 🤖 *(Optional)*: **Trend Popularity Prediction**  
+-  *(Optional)*: **Trend Popularity Prediction**  
   Classify trends into High, Medium, or Low popularity using basic ML models (Logistic Regression, Random Forest).
 
 ---
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 - **Frontend/UI**: Streamlit  
 - **Visualization**: Plotly, Pandas  
@@ -37,7 +37,7 @@ TrenkdVision is a data-driven web application that analyzes **Google Trends** da
 
 ---
 
-## 📁 Dataset Overview
+##  Dataset Overview
 
 | Column         | Description                                                    |
 |----------------|----------------------------------------------------------------|
@@ -52,7 +52,7 @@ TrenkdVision is a data-driven web application that analyzes **Google Trends** da
 | `count`        | Count of similar trends in the cluster (optional)              |
 
 
-## 📦 How to Run Locally
+##  How to Run Locally
 
 ```bash
 git clone https://github.com/your-username/trenkdvision.git
